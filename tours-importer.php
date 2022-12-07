@@ -10,23 +10,27 @@ Author URI: http://URI_Of_The_Plugin_Author
 License: A "Slug" license name e.g. GPL2
 */
 
-class ToursImporter {
+// If this file is called directly, abort.
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
 
-	public function __construct() {
-		register_activation_hook(__FILE__, 'create_tours_table');
-		add_action('admin_notices', $this->create_tours_table());
-	}
+add_action('admin_notices', 'create_tours_table' );
+add_action('admin_menu', 'create_admin_menu' );
 
-	public function create_tours_table() {
+function create_tours_table() {
+	global $pagenow;
+	if ( is_admin() && $pagenow == 'plugins.php' ) {
 		echo '<div class="notice notice-warning is-dismissible">
              <p>This is an example of a notice that appears on the settings page.</p>
          </div>';
-	}
-
-
-}
-function tours_importer_plugin() {
-	new ToursImporter();
+	};
 }
 
-tours_importer_plugin();
+function create_admin_menu() {
+	add_management_page( 'Tours Importer', 'Importer', 'manage_options', 'importer', 'generate_page_content' );
+}
+
+function generate_page_content() {
+	require_once( plugin_dir_path( __FILE__ ) . 'admin/admin-page.php' );
+}
